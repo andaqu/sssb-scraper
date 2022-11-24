@@ -43,3 +43,5 @@ if len(compare) != 0:
     print("There was an update in the listings!")
     ideal_apartments.to_csv("previous_ideal.csv",index=False)
     send_an_email(ideal_apartments)
+else:
+    print("No update in listings!")
