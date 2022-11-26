@@ -19,10 +19,8 @@ driver.get(url)
 res = driver.find_element(By.XPATH, "//*[@id='SubNavigationContentContainer']/div[3]/div[4]/div")
 res_links = driver.find_elements(By.XPATH, "//*[@id='SubNavigationContentContainer']/div[3]/div[4]/div/a")
 
-driver.close()
-
 # Build dataframe, populate the scraped data, and pre-process it
-df = pd.DataFrame(columns = ["Area", "Address", "Type", "Floor", "Living space", "Rent", "Moving date", "Days", "Link"])
+df = pd.DataFrame(columns = ["Area", "Address", "Type", "Floor", "Living space", "Rent", "Moving date", "Days"])
 
 apartments = res.text.split("\n")
 rows = [apartments[i:i + 8] for i in range(0, len(apartments), 8)]
@@ -32,8 +30,11 @@ df[["Days", "Students"]] = df["Days"].apply(lambda x: pd.Series(str(x).split(" (
 df["Students"] = df["Students"].apply(lambda x: pd.Series(x[:1]))
 df["Link"] = [e.get_attribute('href') for e in res_links]
 
+# Once the driver is closed, res and res_links cannot be accessed!
+driver.close()
+
 # ~df["Area"].isin(["Flemingsberg", "Strix"])
-conditions_for_ideal =  (df["Area"] == "Birka") | (df["Type"] == "2 rooms & kitchen") | (df["Living space"].astype(int) >= 30)
+conditions_for_ideal =  (df["Area"] == "Birka") | (df["Type"] == "2 rooms & kitchen") | (df["Living space"].astype(int) >= 28)
 ideal_apartments = df[conditions_for_ideal].sort_values(["Area", "Days"])
 
 # The below code checks if the apartments were changed from the latest scrape. This is done by grabbing the previous scrapped "ideal apartments" and checking their address (i.e. building name & room number) with the newly scrapped ones.
@@ -54,7 +55,7 @@ if not changes.empty:
 
     # The link is only needed for email output, drop it before saving
     ideal_apartments.drop(["Link"], axis=1).to_csv("previous_ideal.csv",index=False)
-    
+
     send_an_email(ideal_apartments, changes)
 else:
     print("No update in listings!")
