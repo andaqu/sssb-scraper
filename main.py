@@ -1,12 +1,13 @@
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 from utils import send_an_email
 import pandas as pd
 
 chromeOptions = Options()
 chromeOptions.add_argument("--headless")
-driver = webdriver.Chrome(options=chromeOptions)
+driver = webdriver.Chrome(ChromeDriverManager().install(), options=chromeOptions)
 
 # Wait for page to load before scraping
 driver.implicitly_wait(5) 
