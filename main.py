@@ -55,7 +55,7 @@ if not changes.empty:
     changes = pd.merge(changes, ideal_apartments[["Address", "Type", "Area", "Link"]], on=["Address"])
 
     # The link is only needed for email output, drop it before saving
-    ideal_apartments.drop(["Link"], axis=1).to_csv("previous_ideal.csv",index=False)
+    # ideal_apartments.drop(["Link"], axis=1).to_csv("previous_ideal.csv",index=False)
 
     send_an_email(ideal_apartments, changes)
 else:
